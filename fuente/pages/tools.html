@@ -1,0 +1,66 @@
+<!-- title: Tools -->
+<h1>Tools</h1>
+<p class="lede">Short scripts that cut, walk and stack your takes. Each one is one page of Python you can read, change, or give to a chat to turn into a new tool.</p>
+
+<h2>How they run</h2>
+<ol>
+  <li>Put the takes of one shot in a folder of their own (same shot, same size, different seeds).</li>
+  <li>Copy <code>RUN.bat</code> from the kit's <code>tools</code> folder into it, and one or more scripts from <code>tools\scripts</code>.</li>
+  <li>Double-click <code>RUN.bat</code>. Every <code>.py</code> in the folder runs. Each one writes its result into a subfolder named after it, with a <code>.txt</code> that says how it was made.</li>
+  <li>VIEW opens in the browser: every take and every result, playing, each with its recipe.</li>
+</ol>
+<p>To change a script, open it in Notepad. The settings are at the top, in CAPITALS. Change a number, save, RUN again.</p>
+
+<h2>The scripts</h2>
+<table>
+  <tr><th>Script</th><th>What it does</th></tr>
+  <tr><td><a href="{repo}/blob/main/scripts/pulse_cut.py">pulse_cut.py</a></td>
+      <td>The first take plays. On every hit of a rhythm, frames from another take jump in. The rhythm is a line of <code>x</code> and <code>.</code>: <code>x..x..x.</code> is the tresillo. Write your own.</td></tr>
+  <tr><td><a href="{repo}/blob/main/scripts/crab_walk.py">crab_walk.py</a></td>
+      <td>One take, three frames forward and one back. Nothing is blended or swapped; only the order is invented. Best on water, smoke, leaves.</td></tr>
+  <tr><td><a href="{repo}/blob/main/scripts/breathing_cut_made_by_a_chat.py">breathing_cut.py</a></td>
+      <td>Cuts get denser where the picture moves and rest where it is still. <b>Written by a chat</b> that saw only the text below, pulse_cut.py, and one sentence. It ran the first time.</td></tr>
+</table>
+<p><a class="button" href="downloads/models_in_motion_tools_2026-10-30.zip">Download all the tools (80 KB)</a></p>
+
+<h2 id="make-a-new-one-with-a-chat">Make a new one with a chat</h2>
+<ol>
+  <li>Open Claude or ChatGPT. Paste the box below.</li>
+  <li>Then paste a script: open it on GitHub (links above), copy all of it.</li>
+  <li>Then write your idea, in your own words, in any language.</li>
+  <li>Save the answer into your folder of takes as <code>something.py</code>. In Notepad choose <i>Save as type: All files</i>, or it becomes <code>something.py.txt</code>.</li>
+  <li>Double-click <code>RUN.bat</code>.</li>
+  <li>If it stops with an error, copy the black window into the chat and say "fix it". Save, RUN again. You are the loop.</li>
+</ol>
+
+<pre><code>I edit AI-generated video with small Python scripts. Here is one that works.
+Write me a NEW script with the same shape and a different idea (below).
+
+The shape (keep it exactly):
+- One file. Only these libraries: Python's standard library, numpy, cv2
+  (OpenCV), PIL. Nothing to install.
+- The script sits in a folder of video takes: several .mp4 files of the same
+  shot, same size, 24 fps, about 6 seconds. It reads them from its own folder:
+  HERE = Path(__file__).parent, takes = sorted(HERE.glob("*.mp4")).
+- It writes its results into a new subfolder named after the script
+  (HERE / Path(__file__).stem), as .mp4 with cv2.VideoWriter.
+- Next to every video it writes a .txt with the same name: the settings and
+  what it did, so anyone can see how it was made.
+- The settings go at the top, in CAPITALS, with a comment each, so I can
+  change them without reading the code.
+- It prints what it is doing. Short and readable: I am not a programmer, and
+  I want to understand it by reading it.
+
+My idea:</code></pre>
+
+<h3>Ideas, if you need one to start</h3>
+<ul>
+  <li>cut on the rhythm of a line of your page (x where it leans, . where it rests)</li>
+  <li>every take plays a different part of the bar, like instruments</li>
+  <li>a crab that walks forward in one take and back in another</li>
+  <li>the shot plays forward, and on every hit it jumps back to its first frame</li>
+  <li>the cuts follow a breath: slow, slow, fast fast fast, slow</li>
+</ul>
+
+<h2>The older tools</h2>
+<p>The kit also has tools that read a recipe from a text file: <b>MICRO-EDIT</b> (cuts on named rhythms), <b>CRAB</b>, <b>VELVET</b> (averages the takes: sharp where they agree, mist where they disagree), <b>MELT</b> (redraws every frame with a small diffusion model) and <b>VIEW</b>. Copy the <code>.bat</code> into a folder of takes and double-click. <code>tools\TOOLS.txt</code> explains each one.</p>

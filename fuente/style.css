@@ -1,0 +1,38 @@
+:root {
+  --bg: #f6f4ef; --ink: #1c1b19; --dim: #6e6a62; --line: #d9d4c9; --hot: #b3261e; --code: #ebe7de;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #121211; --ink: #ece8e1; --dim: #948f86; --line: #2c2a27; --hot: #ff8a65; --code: #1e1d1b; }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+       font: 18px/1.6 Georgia, "Times New Roman", serif; }
+a { color: var(--hot); text-underline-offset: 3px; }
+.top { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: baseline; justify-content: space-between;
+       max-width: 760px; margin: 0 auto; padding: 28px 16px 8px; border-bottom: 1px solid var(--line); }
+.top .name { color: var(--ink); text-decoration: none; font-size: 20px; letter-spacing: .02em; }
+.top nav { display: flex; gap: 18px; font: 14px/1 ui-monospace, Consolas, monospace; }
+.top nav a { color: var(--dim); text-decoration: none; }
+.top nav a:hover { color: var(--ink); }
+main { max-width: 760px; margin: 0 auto; padding: 8px 16px 64px; }
+h1 { font-weight: normal; font-size: 40px; line-height: 1.15; margin: 40px 0 8px; }
+h2 { font-weight: normal; font-size: 26px; margin: 48px 0 8px; }
+h3 { font-size: 18px; margin: 32px 0 4px; }
+.lede { color: var(--dim); font-size: 20px; margin-top: 0; }
+code, pre { font: 15px/1.5 ui-monospace, Consolas, monospace; background: var(--code); }
+code { padding: 1px 5px; border-radius: 3px; }
+pre { padding: 14px 16px; overflow-x: auto; border-radius: 4px; }
+pre code { padding: 0; background: none; }
+table { border-collapse: collapse; width: 100%; font-size: 16px; margin: 16px 0; }
+th, td { text-align: left; vertical-align: top; padding: 8px 10px 8px 0; border-bottom: 1px solid var(--line); }
+th { font-weight: normal; color: var(--dim); }
+ol li, ul li { margin: 6px 0; }
+blockquote { margin: 16px 0; padding: 4px 16px; border-left: 3px solid var(--hot); color: var(--dim); }
+.button { display: inline-block; border: 1px solid var(--ink); color: var(--ink); text-decoration: none;
+          padding: 8px 16px; border-radius: 3px; font: 15px ui-monospace, Consolas, monospace; margin: 4px 0; }
+.button:hover { background: var(--ink); color: var(--bg); }
+footer { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; color: var(--dim); font-size: 14px;
+         border-top: 1px solid var(--line); }
+footer a { color: var(--dim); }
+@media (max-width: 520px) { h1 { font-size: 32px; } body { font-size: 17px; } }

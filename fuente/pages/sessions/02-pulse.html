@@ -1,0 +1,48 @@
+<!-- title: 2 · Pulse -->
+<h1>2 · Pulse: slowing down</h1>
+<p class="lede">Oct 30. Thirteen takes become one shot when you decide <i>when</i> each one shows. That decision is a rhythm.</p>
+
+<p>This field moves so fast that its forms die before anyone understands them. Tools from four years ago no longer exist. A pulse is the opposite of that speed: something that comes back, and so can be studied. Today we slow down on purpose: thirteen takes of one shot, six seconds, looked at frame by frame.</p>
+
+<h2>A short history of making images move</h2>
+<table>
+  <tr><td>2021–22</td><td><b>Disco Diffusion</b>, a Colab notebook. Its v5 (Feb 2022) added 3D animation: every image is born from the one before it, pushed by a camera you write.</td></tr>
+  <tr><td>2022</td><td><b>Deforum</b> takes that to Stable Diffusion. A new way of animating: not frames drawn, not footage shot, but an image that feeds on itself while numbers move the camera. <i>Hybrid video</i> mixes a real video into every frame.</td></tr>
+  <tr><td>2022</td><td><b>WarpFusion</b>, by Sxela (Alex Spirin): diffusion painted over real video, each frame warped along the movement of the one before, so the style sticks to the motion.</td></tr>
+  <tr><td>2022–23</td><td><b>Parseq</b>, by Robin Fernandes (rewbs): every value of a Deforum animation (zoom, rotation, strength, seed, the prompt) becomes a curve in time, written in frames, seconds or beats, locked to the music.</td></tr>
+  <tr><td>2023</td><td><b>AnimateDiff</b>: a motion module trained on video, plugged into Stable Diffusion. The model itself learns to move.</td></tr>
+  <tr><td>now</td><td>Video models (LTX, Wan, Sora...) replaced all of it in about two years.</td></tr>
+</table>
+<p>Watch: <a href="https://www.youtube.com/watch?v=M6Z-kD2HnDQ">Parseq tutorial, part 3: audio sync</a> by rewbs. The explanation and the image are on screen at the same time: the teaching is the work. (<a href="https://www.youtube.com/playlist?list=PLXbx1PHKHwIHsYFfb5lq2wS8g1FKz6aP8">The whole series.</a>)</p>
+<p>What survives the tools: <b>time is a variable you write</b> (frame, second, beat) · <b>the music is a curve</b> · <b>the image follows; it does not illustrate</b>.</p>
+
+<h2>The cut in time</h2>
+<p>Artists who worked the single frame, by hand, long before any of this. Look them up:</p>
+<ul>
+  <li><b>Norman McLaren</b>, <i>Synchromy</i> (1971). The picture is the soundtrack.</li>
+  <li><b>Tony Conrad</b>, <i>The Flicker</i> (1966); <b>Paul Sharits</b>, <i>N:O:T:H:I:N:G</i> (1968). The frame as the unit of composition.</li>
+  <li><b>Ken Jacobs</b>, <i>Tom, Tom, the Piper's Son</i> (1969). A 1905 film re-filmed, slowed, stopped, re-framed.</li>
+  <li><b>Martin Arnold</b>, <i>pièce touchée</i> (1989). Eighteen seconds of a 1954 film stretched to about sixteen minutes, frame by frame, forward and back.</li>
+</ul>
+<p>They had one take and an optical printer. We have thirteen takes of the same moment, and a script.</p>
+
+<h3>Arc and pulse</h3>
+<p>A <b>Fibonacci</b> pattern (1, 2, 3, 5, 8, 13, 21...) never repeats: it reads as a gesture, a startle that settles. A <b>tresillo</b> (<code>x..x..x.</code>, 3-3-2) repeats: it reads as a groove.</p>
+<p>Godfried Toussaint, <i>The Euclidean Algorithm Generates Traditional Musical Rhythms</i> (2005): spread k hits as evenly as possible over n steps with Euclid's algorithm, and out come rhythms from all over the world. 3 in 8 is the tresillo, 5 in 8 the cinquillo, 7 in 12 a West African bell pattern.</p>
+
+<h3>The dose</h3>
+<p>Cut every shot and the cut stops reading as a decision; it reads as a filter. Nothing rests, so nothing lands. Establish the shot, make it alive, then break it a little.</p>
+
+<h2>In the lab</h2>
+<ol>
+  <li>Update the tools (<a href="../install.html">Install, step 2</a>).</li>
+  <li>Queue <b>13 takes</b> of one shot from your page: workflow 03, type 13 next to Run, press once.</li>
+  <li>Move the 13 takes into a folder of their own. Copy <code>RUN.bat</code> and <code>scripts\pulse_cut.py</code> into it.</li>
+  <li><b>Your page's rhythm.</b> Read one line of your page aloud. Write it as <code>x</code> where it leans and <code>.</code> where it rests. Put that string in <code>RHYTHM</code> at the top of pulse_cut.py. Save. Double-click RUN.<br>
+      Example, a line of Whitman (1855): <i>I celebrate myself, and sing myself</i> &rarr; <code>.x.x.x.x.x</code></li>
+  <li>Try the dose: <code>WINDOW = (2, 4)</code> cuts only between seconds 2 and 4.</li>
+  <li><b>A script of your own.</b> With a chat, from an idea of yours: <a href="../tools.html#make-a-new-one-with-a-chat">how</a>. RUN.</li>
+</ol>
+
+<h2>Bring next time</h2>
+<p>One script that is yours, what it made, and a <b>name</b> for it. The name does not have to exist yet.</p>

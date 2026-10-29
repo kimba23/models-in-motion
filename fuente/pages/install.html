@@ -1,0 +1,50 @@
+<!-- title: Install -->
+<h1>Install the kit</h1>
+<p class="lede">One folder with everything inside: its own Python, ComfyUI, the models, the workflows and the tools. Nothing to install.</p>
+
+<h2>1. Download the kit</h2>
+<p><a class="button" href="https://www.dropbox.com/scl/fi/tw22wi3mchpmf81hkiarv/models_in_motion.zip?rlkey=uqjow5y99u0lzxtor96yparm4&amp;dl=0">models_in_motion.zip &nbsp;·&nbsp; 68 GB, Dropbox</a></p>
+<p>It is big: start the download early. Unzip it on a fast SSD with about 70 GB free (NTFS or exFAT, not FAT32). You get a folder called <code>models_in_motion</code>.</p>
+
+<h2>2. Update the tools</h2>
+<p><a class="button" href="downloads/models_in_motion_tools_2026-10-30.zip">models_in_motion_tools_2026-10-30.zip &nbsp;·&nbsp; 80 KB</a></p>
+<ol>
+  <li>Double-click the zip to open it. Inside there is one folder: <code>tools</code>.</li>
+  <li>Drag <code>tools</code> into your <code>models_in_motion</code> folder. Say yes to replace.</li>
+</ol>
+<p>This only touches the tools. ComfyUI, the workflows and your renders stay as they are.</p>
+
+<h2>3. Start</h2>
+<table>
+  <tr><td><code>CHECK.bat</code></td><td>Before the first time: shows the GPU and driver, and whether PyTorch sees the GPU. If it says NO GPU, update the NVIDIA driver (580 or newer).</td></tr>
+  <tr><td><code>START.bat</code></td><td>Starts ComfyUI. The browser opens on <code>http://127.0.0.1:8188</code>. Close ComfyUI by closing its black window.</td></tr>
+  <tr><td><code>START_safe.bat</code></td><td>The same, without SageAttention. Use it if START fails on "triton" or "sageattention".</td></tr>
+</table>
+<p>The first render after starting is slow (the models load from disk); the next ones are fast.</p>
+
+<h2>The workflows</h2>
+<p>In ComfyUI: left bar &rarr; Workflows.</p>
+<table>
+  <tr><td>01</td><td>LTX 2.5, text to video</td><td>a sentence becomes a clip, with sound</td></tr>
+  <tr><td>02</td><td>LTX 2.5, image to video</td><td>a frame becomes a clip</td></tr>
+  <tr><td>03</td><td>LTX 2.5, first and last frame</td><td>two frames; LTX finds the movement between them</td></tr>
+  <tr><td>04</td><td>Qwen 2.1, text to image</td><td>a sentence becomes a frame</td></tr>
+  <tr><td>05</td><td>Qwen 2.1, image edit</td><td>change a frame with words</td></tr>
+  <tr><td>06</td><td>Qwen 2.1, background removal</td><td>a frame with a transparent background</td></tr>
+  <tr><td>07</td><td>LTX 2.5, grey box to render</td><td>a reference video drives the movement; the prompt and a frame set the look</td></tr>
+  <tr><td>08</td><td>footage to movement guide</td><td>your clip becomes depth and a skeleton: only the movement survives</td></tr>
+  <tr><td>09</td><td>example: footage depth drives the render</td><td>07 fed with 08's depth</td></tr>
+</table>
+
+<h2 id="many-takes">Many takes of one shot</h2>
+<p>In the small box next to the blue <b>Run</b> button, type <b>13</b> and press Run <b>once</b>. ComfyUI queues 13 renders, each with a new seed: 13 takes of the same shot. They appear one by one in <code>models_in_motion\ComfyUI\output\video</code>.</p>
+<p>If they come out identical: inside the big node, find <b>RandomNoise</b> and set <i>control after generate</i> to <b>randomize</b>.</p>
+
+<h2>Where things are</h2>
+<table>
+  <tr><td><code>ComfyUI\output\video</code></td><td>your videos</td></tr>
+  <tr><td><code>ComfyUI\output</code></td><td>your images</td></tr>
+  <tr><td><code>tools</code></td><td>RUN, VIEW, the scripts (see <a href="tools.html">Tools</a>)</td></tr>
+  <tr><td><code>examples</code></td><td>takes to practise on: a subway shot, a wave</td></tr>
+</table>
+<p>Every image and video carries its workflow inside: drag it back onto ComfyUI to reopen exactly how it was made.</p>

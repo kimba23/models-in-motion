@@ -1,0 +1,41 @@
+HOW TO MAKE A NEW SCRIPT WITH A CHAT (Claude, ChatGPT, Gemini ...)
+=================================================================
+
+1. Open a chat. Paste the box below, then paste ONE of the scripts
+   (pulse_cut.py or crab_walk.py: open it in Notepad, copy all).
+2. Write your idea in your own words at the end. Any language.
+3. Save what the chat gives you into your folder of takes as  something.py
+   (Notepad: "Save as type: All files", or it becomes something.py.txt).
+4. Double-click RUN.bat in that folder. VIEW opens with the result.
+5. If it stops with an error: copy the black window, paste it to the chat,
+   "fix it". Save, RUN again. You are the loop.
+
+----------------------------- paste this ------------------------------------
+I edit AI-generated video with small Python scripts. Here is one that works.
+Write me a NEW script with the same shape and a different idea (below).
+
+The shape (keep it exactly):
+- One file. Only these libraries: Python's standard library, numpy, cv2
+  (OpenCV), PIL. Nothing to install.
+- The script sits in a folder of video takes: several .mp4 files of the same
+  shot, same size, 24 fps, about 6 seconds. It reads them from its own folder:
+  HERE = Path(__file__).parent, takes = sorted(HERE.glob("*.mp4")).
+- It writes its results into a new subfolder named after the script
+  (HERE / Path(__file__).stem), as .mp4 with cv2.VideoWriter.
+- Next to every video it writes a .txt with the same name: the settings and
+  what it did, so anyone can see how it was made.
+- The settings go at the top, in CAPITALS, with a comment each, so I can
+  change them without reading the code.
+- It prints what it is doing. Short and readable: I am not a programmer, and
+  I want to understand it by reading it.
+
+My idea:
+-----------------------------------------------------------------------------
+
+IDEAS, if you need one to start:
+- cut on the rhythm of a line of your page (x where it leans, . where it rests)
+- the cuts get denser where the picture moves most, and rest where it is still
+- every take plays a different part of the bar, like instruments
+- a crab that walks forward in one take and back in another
+- the shot plays forward, and on every hit it jumps back to its first frame
+- the cuts follow a breath: slow, slow, fast fast fast, slow
