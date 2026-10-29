@@ -39,9 +39,9 @@ PAGE = """<!doctype html>
 
 
 def build():
-    if OUT.exists():
-        shutil.rmtree(OUT)
-    OUT.mkdir()
+    OUT.mkdir(exist_ok=True)
+    for old in OUT.iterdir():                    # empty it (a test server may be sitting in it)
+        shutil.rmtree(old) if old.is_dir() else old.unlink()
     shutil.copy(SRC / "style.css", OUT / "style.css")
     for folder in ("scripts", "downloads"):
         shutil.copytree(ROOT / folder, OUT / folder)
