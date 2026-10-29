@@ -6,7 +6,7 @@ The class site and the scripts. Seven Fridays, fall 2026.
 - `downloads/` — the tools update for the kit (the kit itself is on Dropbox, linked from the site).
 - `fuente/pages/` — the pages, as HTML fragments. `fuente/build.py` wraps them into `publicar/`.
 
-Publish (Cloudflare Pages, project `motion`):
+Live at https://motion.catalejo.xyz (Cloudflare Pages project `motion`, motion-2a6.pages.dev). Publish:
 
     python fuente/build.py
     wrangler pages deploy publicar --project-name motion --branch main --commit-dirty=true
