@@ -38,6 +38,10 @@ def read_frames(path):
         frames.append(frame)
 
 
+SALAD = {"yes": "back", "y": "back", "true": "back", "": "no", "false": "no"}.get(str(SALAD).lower(), str(SALAD).lower())
+if SALAD not in ("no", "back", "every"):
+    raise SystemExit(f'SALAD must be "no", "back" or "every" (you wrote "{SALAD}")')
+
 takes = sorted(HERE.glob("*.mp4"))
 if SALAD == "no":
     takes = [takes[TAKE]]
