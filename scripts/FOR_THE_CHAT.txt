@@ -16,6 +16,10 @@ same shape and my idea (at the end). The shape:
 - It reads the .mp4 takes in its own folder: sorted(Path(__file__).parent.glob("*.mp4"))
 - It writes .mp4 (cv2.VideoWriter) into a subfolder named after the script,
   and next to each video a .txt with the settings it used.
+- For the sound: next to each video also a .frames file with the same name,
+  one line per output frame: source frame number, a tab, the take's file name
+  (several takes separated by tabs = mix their sound). Another program
+  rebuilds the audio from it.
 - Settings at the top in CAPITALS, one comment each.
 - Short and readable. Print what it does.
 My idea:

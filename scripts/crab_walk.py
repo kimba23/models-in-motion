@@ -53,6 +53,9 @@ for i in order:
     writer.write(frames[i])
 writer.release()
 
+# where every frame came from (RUN rebuilds the sound from this list: the steps back play backwards)
+(OUT / f"{name}.frames").write_text("".join(f"{i}\t{take.name}\n" for i in order), encoding="utf-8")
+
 (OUT / f"{name}.txt").write_text(
     f"FORWARD {FORWARD}  BACK {BACK}  take {take.name}\n"
     f"{len(frames)} frames became {len(order)}\n\norder:\n" + " ".join(map(str, order)),

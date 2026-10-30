@@ -124,6 +124,9 @@ def main():
             writer.write(clips[take][f])
     finally:
         writer.release()
+    # where every frame came from (RUN rebuilds the sound from this list)
+    target.with_suffix('.frames').write_text(
+        ''.join(f"{f}\t{takes[take].name}\n" for f, take in enumerate(source)), encoding='utf-8')
     changed = sum(s != 0 for s in source)
     lines = ["THE RANDOM THING", f"SEED={seed} METERS={METERS} STEP={STEP} "
              f"LENGTH={LENGTH} DENSITY={DENSITY} WINDOW={WINDOW}",
@@ -131,7 +134,7 @@ def main():
              "Sixteenth-note grid; x=cut, .=base; take indices start at 0.",
              "Each complete bar's hit pattern and take sequence are palindromes.",
              "Strong beats follow the logged eighth-note grouping.",
-             "Footage moves forward; output has no audio.",
+             "Footage moves forward; RUN rebuilds the sound from the .frames list.",
              "Frames outside complete bars remain on the base take.",
              "", "TAKES"]
     lines += [f"{i}: {p.name}" for i, p in enumerate(takes)]

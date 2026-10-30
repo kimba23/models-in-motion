@@ -74,6 +74,9 @@ for i in range(limit):
     print(f"  {i + 1}/{limit}", end="\r", flush=True)
 writer.release()
 
+# where every frame came from (RUN puts the take's own sound back from this list)
+(OUT / f"{name}.frames").write_text("".join(f"{f}\t{take.name}\n" for f in range(i + 1)), encoding="utf-8")
+
 (OUT / f"{name}.txt").write_text(
     f'PROMPT "{PROMPT}"\nSTRENGTH {STRENGTH}  FEEDBACK {FEEDBACK}  DETAIL {DETAIL}  SEED {SEED}\n'
     f"melted from {take.name}, {limit} frames, sd-turbo, {steps} steps per frame", encoding="utf-8")

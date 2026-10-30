@@ -71,6 +71,10 @@ for f in range(n):
     writer.write(img.astype(np.uint8))
 writer.release()
 
+# where every frame came from (RUN mixes the sound of the stacked takes from this list)
+(OUT / f"{name}.frames").write_text(
+    "".join(f"{f}\t" + "\t".join(t.name for t in takes[:depth[f]]) + "\n" for f in range(n)), encoding="utf-8")
+
 (OUT / f"{name}.txt").write_text(
     f"MODE {MODE}  RHYTHM {RHYTHM}  STEP {STEP}  RELEASE {RELEASE}\n"
     f"{len(takes)} takes stacked, on average {sum(depth) / n:.1f} at a time",

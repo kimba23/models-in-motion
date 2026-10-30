@@ -60,6 +60,9 @@ for f in range(n):
     writer.write(clips[source[f]][f])
 writer.release()
 
+# where every frame came from (RUN rebuilds the sound from this list)
+(OUT / f"{name}.frames").write_text("".join(f"{f}\t{takes[source[f]].name}\n" for f in range(n)), encoding="utf-8")
+
 # the recipe, next to the video, so anyone can see how it was made
 changed = sum(1 for s in source if s)
 lines = [f"RHYTHM {RHYTHM}  STEP {STEP}  LENGTH {LENGTH}  WINDOW {WINDOW}  SEED {SEED}",
