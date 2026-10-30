@@ -5,18 +5,18 @@
 <h2>How it works</h2>
 <ol>
   <li>A folder with the takes of <b>one</b> shot.</li>
-  <li>Copy into it <code>RUN.bat</code> (from the kit's <code>tools</code>) and the scripts you want (from <code>tools\scripts</code>).</li>
+  <li>Copy into it <code>RUN.bat</code> (from the kit's <code>tools</code>) and the scripts you want (the <code>.py</code> files in the same folder).</li>
   <li>Double-click <code>RUN.bat</code>. Every <code>.py</code> in the folder runs, and INDEX opens with every video, named. Drag one <code>.py</code> onto RUN to run only that one.</li>
 </ol>
 
 <h2>The scripts</h2>
 <table>
   <tr><th>Script</th><th>What it does</th><th>Change it at the top</th></tr>
-  <tr><td><a href="{repo}/blob/main/scripts/pulse_cut.py">pulse_cut.py</a></td><td>Cuts between the takes on a rhythm.</td><td><code>RHYTHM = "x..x..x."</code></td></tr>
+  <tr><td><a href="{repo}/blob/main/scripts/pulse_cut.py">pulse_cut.py</a></td><td>The micro-edit: cuts between the takes on a rhythm.</td><td><code>RHYTHM = "x..x..x."</code></td></tr>
   <tr><td><a href="{repo}/blob/main/scripts/crab_walk.py">crab_walk.py</a></td><td>One take, forward and back. Only the order is invented.</td><td><code>FORWARD = 3</code> <code>BACK = 1</code></td></tr>
   <tr><td><a href="{repo}/blob/main/scripts/velvet.py">velvet.py</a></td><td>Stacks the takes: sharp where they agree, mist where they disagree.</td><td><code>MODE = "mean"</code></td></tr>
   <tr><td><a href="{repo}/blob/main/scripts/melt.py">melt.py</a></td><td>Redraws every frame with a small diffusion model, feeding the last one back in. GPU, about a minute; close ComfyUI first.</td><td><code>PROMPT = "..."</code></td></tr>
-  <tr><td><a href="{repo}/blob/main/scripts/breathing_cut_made_by_a_chat.py">breathing_cut</a></td><td>Cuts more where the picture moves. Written by a chat from one sentence.</td><td><code>MAX_CUTS_PER_SECOND</code></td></tr>
+  <tr><td><a href="{repo}/blob/main/scripts/breathing_cut.py">breathing_cut</a></td><td>Cuts more where the picture moves. Written by a chat from one sentence.</td><td><code>MAX_CUTS_PER_SECOND</code></td></tr>
 </table>
 <p>Open a script in Notepad: the settings are at the top, in CAPITALS. Change a number or a word, save, RUN again.</p>
 <p><a class="button" href="downloads/models_in_motion_tools_2026-10-30.zip">Download the tools (90 KB)</a></p>
