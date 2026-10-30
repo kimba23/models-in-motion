@@ -7,7 +7,7 @@
   <li>Put the takes of one shot in a folder of their own (same shot, same size, different seeds).</li>
   <li>Copy <code>RUN.bat</code> from the kit's <code>tools</code> folder into it, and one or more scripts from <code>tools\scripts</code>.</li>
   <li>Double-click <code>RUN.bat</code>. Every <code>.py</code> in the folder runs. Each one writes its result into a subfolder named after it, with a <code>.txt</code> that says how it was made.</li>
-  <li>VIEW opens in the browser: every take and every result, playing, each with its recipe.</li>
+  <li>INDEX opens in the browser: every take and every result with its name, grouped by folder. Click to play, F for full screen, arrows for the next one.</li>
 </ol>
 <p>To change a script, open it in Notepad. The settings are at the top, in CAPITALS. Change a number, save, RUN again.</p>
 
@@ -63,4 +63,12 @@ My idea:</code></pre>
 </ul>
 
 <h2>The older tools</h2>
-<p>The kit also has tools that read a recipe from a text file: <b>MICRO-EDIT</b> (cuts on named rhythms), <b>CRAB</b>, <b>VELVET</b> (averages the takes: sharp where they agree, mist where they disagree), <b>MELT</b> (redraws every frame with a small diffusion model) and <b>VIEW</b>. Copy the <code>.bat</code> into a folder of takes and double-click. <code>tools\TOOLS.txt</code> explains each one.</p>
+<p>The kit also has tools that read a recipe from a text file. Copy the <code>.bat</code> into a folder of takes and double-click. <code>tools\TOOLS.txt</code> explains each one.</p>
+<table>
+  <tr><td><b>ASPERO</b></td><td>Cuts between the takes on named rhythms (fib, tresillo, son, euclid 5 16 ...). Jagged.</td></tr>
+  <tr><td><b>VELVET</b></td><td>The opposite: averages the takes. Sharp where they agree, mist where they disagree.</td></tr>
+  <tr><td><b>CRAB</b></td><td>Forward and back on one take, from a recipe.</td></tr>
+  <tr><td><b>MELT</b></td><td>Redraws every frame with a small diffusion model, feeding the last frame back in. Drag ONE video onto it: a whole folder takes a minute per video. Close ComfyUI first.</td></tr>
+  <tr><td><b>INDEX</b></td><td>Every video in a folder, with its name, on one page. Double-click it in any folder.</td></tr>
+  <tr><td><b>VIEW</b></td><td>The study page: your text flowing around the videos.</td></tr>
+</table>
