@@ -96,6 +96,16 @@
 <p class="dim">One file, nothing to install, runs without internet. The saved map finds its videos by name, so they must stay in the same folder.</p>
 <p>It is small on purpose. Things it could learn: an infinite canvas (left, right, up, down, forever), text on the map, rotation, masks and mats that give a video a shape, veins that connect two parts and pulse. It is one HTML file: open it, read it, ask a chat to change it.</p>
 
+<h3>Patamapa v2: words</h3>
+<p>The same map, now with words. The words are laid out with <a href="https://github.com/chenglou/pretext">Pretext</a> (by Cheng Lou, MIT), bundled inside the file.</p>
+<p><a class="button" href="{up}downloads/patamapa_v2.html" download="patamapa.html">download patamapa v2</a> &nbsp; <a class="button" href="{up}apps/patamapa/patamapa_v2.html">try it here</a></p>
+<ul>
+  <li>Words come in with <b>+ text</b>, by pasting (Ctrl+V), or by dropping a <code>.txt</code> file (with the folder too).</li>
+  <li>Whatever is on top wins: a picture laid over words pushes them aside; words laid over a picture sit on it.</li>
+  <li>Hover the words: <b>A− A+</b> size, <b>◯</b> pour them into a circle (they grow to fill it), <b>¶</b> back to a paragraph, <b>⁘</b> scatter the paragraph into loose words.</li>
+  <li>Double-click to write. <b>save</b> keeps the words inside the map.</li>
+</ul>
+
 <h2>The prompts, taken apart</h2>
 <p>One part of the map, the heart, from the words to the video. Two steps: <b>words → a still</b> (Qwen 2.1, workflow 04), then <b>the still → a video</b> (LTX 2.5, workflow 02). The still is the video's first frame.</p>
 <h3>The picture prompt</h3>
