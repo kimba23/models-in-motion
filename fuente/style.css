@@ -1,8 +1,6 @@
-:root {
-  --bg: #f6f4ef; --ink: #1c1b19; --dim: #6e6a62; --line: #d9d4c9; --hot: #b3261e; --code: #ebe7de;
-}
-@media (prefers-color-scheme: dark) {
-  :root { --bg: #121211; --ink: #ece8e1; --dim: #948f86; --line: #2c2a27; --hot: #ff8a65; --code: #1e1d1b; }
+:root {      /* always dark: black background whatever the computer's setting */
+  --bg: #121211; --ink: #ece8e1; --dim: #948f86; --line: #2c2a27; --hot: #ff8a65; --code: #1e1d1b;
+  color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
