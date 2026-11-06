@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>patamapa</title>
+<!--
+  patamapa.html — drop videos and pictures on it, throw them around, make a (pataphysical) map.
+
+  1. Put this file anywhere and open it (Chrome or Edge).
+  2. Drop videos or pictures on it (or a whole folder). They land on the canvas.
+  3. Drag a video to move it, drag its corner to make it bigger or smaller,
+     double-click its name to rename it, the small buttons turn sound on/off or remove it.
+  4. "save / guardar" saves the map as patamapa.html IN THE FOLDER OF THE VIDEOS.
+     Open that one and the map is there. You can keep moving things and save again.
+-->
+<style>
+  :root { --bg: #0a0a0a; --ink: #e6e1d8; --dim: #77726b; --line: #2a2826; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font: 14px/1.4 Georgia, serif; overflow-x: hidden; overflow-y: auto; }
+  #stage { position: relative; width: 100%; min-height: 100vh; }
+  #stage.over { outline: 2px dashed var(--dim); outline-offset: -12px; }
+  #hint { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+          gap: 6px; color: var(--dim); pointer-events: none; text-align: center; }
+  #hint b { font-size: 28px; font-weight: normal; color: var(--ink); letter-spacing: .04em; }
+  #bar { position: fixed; top: 10px; right: 10px; display: flex; gap: 6px; z-index: 100000; opacity: .35; transition: opacity .3s; }
+  #bar:hover, body.editing #bar { opacity: 1; }
+  #bar button, #bar label { font: inherit; font-size: 13px; background: rgba(0,0,0,.6); color: var(--ink); border: 1px solid var(--dim);
+          padding: 5px 12px; cursor: pointer; }
+  #bar button:hover, #bar label:hover { border-color: var(--ink); }
+  #msg { position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%); color: var(--ink); background: rgba(0,0,0,.7);
+         padding: 6px 14px; border: 1px solid var(--line); opacity: 0; transition: opacity .4s; pointer-events: none; z-index: 100001; }
+  #msg.on { opacity: 1; }
+
+  .tile { position: absolute; touch-action: none; cursor: grab; user-select: none;
+          transition: left .9s cubic-bezier(.2,.9,.25,1.15), top .9s cubic-bezier(.2,.9,.25,1.15), transform .9s cubic-bezier(.2,.9,.25,1.15); }
+  .tile.held { cursor: grabbing; transition: none; }
+  .tile.fresh { transform: scale(.15) rotate(var(--spin, 0deg)); }
+  .tile video, .tile img { display: block; width: 100%; height: auto; background: #000; pointer-events: none; user-select: none; }
+  .tile .name { position: absolute; left: 0; bottom: 0; padding: 3px 7px; font-size: 12px; letter-spacing: .06em;
+                background: rgba(0,0,0,.55); color: #fff; outline: none; cursor: text; max-width: 100%; }
+  .tile .name:empty { display: none; }
+  .tile .tools { position: absolute; top: 4px; right: 4px; display: flex; gap: 3px; opacity: 0; transition: opacity .2s; }
+  .tile:hover .tools { opacity: 1; }
+  .tile .tools button { font: 12px/1 Georgia, serif; width: 24px; height: 24px; padding: 0; background: rgba(0,0,0,.65);
+                        color: #fff; border: 1px solid rgba(255,255,255,.35); cursor: pointer; }
+  .tile .tools button.on { background: #e6e1d8; color: #000; }
+  .tile .grip { position: absolute; right: 0; bottom: 0; width: 26px; height: 26px; cursor: nwse-resize; opacity: 0;
+                border-right: 2px solid #fff; border-bottom: 2px solid #fff; transition: opacity .2s; }
+  .tile:hover .grip, .tile.held .grip { opacity: .8; }
+  .tile.missing video, .tile.missing img { min-height: 80px; outline: 1px dashed var(--dim); }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="hint"><b>patamapa</b><span>drop videos or pictures here / suelta videos o fotos aquí</span><span>(or a whole folder / o una carpeta entera)</span></div>
+<div id="bar">
+  <label>+ add / añadir<input id="pick" type="file" accept="video/*,image/*" multiple hidden></label>
+  <button id="sound">sound / sonido</button>
+  <button id="save">save / guardar</button>
+</div>
+<div id="msg"></div>
+<script>
+// the saved maps keep their tiles here (guardar writes this line); units are vw, so the map scales with the window
+let LAYOUT = null; // @layout
+
+const SOURCE = "<!doctype html>\n" + document.documentElement.outerHTML;   // this page as it was opened: guardar copies it
+const stage = document.getElementById("stage"), hint = document.getElementById("hint");
+let folder = null;            // when a folder is dropped (Chrome/Edge), guardar writes patamapa.html straight into it
+let zTop = 1, soundOn = false;
+
+const W = () => window.innerWidth || document.documentElement.clientWidth || 1280;
+const vw = px => px / W() * 100;
+function say(text) { const m = document.getElementById("msg"); m.textContent = text; m.classList.add("on");
+                     clearTimeout(say.t); say.t = setTimeout(() => m.classList.remove("on"), 3500); }
+function tiles() { return [...stage.querySelectorAll(".tile")]; }
+function refreshHint() { hint.style.display = tiles().length ? "none" : "flex"; }
+
+// ---- a tile -----------------------------------------------------------------
+function makeTile({ file, src, name, x, y, w, z, sound }) {
+  const t = document.createElement("div");
+  t.className = "tile";
+  t.dataset.file = file;
+  t.dataset.sound = sound ? "1" : "0";
+  Object.assign(t.style, { left: x + "vw", top: y + "vw", width: w + "vw", zIndex: z || ++zTop });
+  zTop = Math.max(zTop, z || 0);
+  const still = isImage({ name: file, type: "" });                   // a picture: an <img>, no sound
+  const v = document.createElement(still ? "img" : "video");
+  if (still) Object.assign(v, { src, alt: name, draggable: false });
+  else Object.assign(v, { src, loop: true, muted: true, playsInline: true, autoplay: true, preload: "auto" });
+  v.onerror = () => { t.classList.add("missing"); };
+  const label = document.createElement("div");
+  label.className = "name"; label.textContent = name; label.spellcheck = false;
+  label.ondblclick = e => { e.stopPropagation(); label.contentEditable = "true"; label.focus(); document.execCommand("selectAll"); };
+  label.onblur = () => { label.contentEditable = "false"; };
+  label.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); label.blur(); } };
+  const tools = document.createElement("div");
+  tools.className = "tools";
+  const snd = document.createElement("button"); snd.textContent = "♪"; snd.title = "sound / sonido";
+  snd.classList.toggle("on", !!sound);
+  snd.onclick = e => { e.stopPropagation(); const on = t.dataset.sound !== "1"; t.dataset.sound = on ? "1" : "0";
+                       snd.classList.toggle("on", on); v.muted = !(on && soundOn); };
+  const del = document.createElement("button"); del.textContent = "×"; del.title = "remove / quitar";
+  del.onclick = e => { e.stopPropagation(); t.remove(); refreshHint(); };
+  if (still) tools.append(del); else tools.append(snd, del);
+  const grip = document.createElement("div"); grip.className = "grip";
+  t.append(v, label, tools, grip);
+  stage.append(t);
+  drag(t, grip);
+  refreshHint();
+  return t;
+}
+
+// move by dragging the tile, resize by dragging the corner; whatever you touch comes to the front
+function drag(t, grip) {
+  t.addEventListener("pointerdown", e => {
+    if (e.target.closest(".tools") || e.target.isContentEditable) return;
+    e.preventDefault();
+    t.style.zIndex = ++zTop;
+    t.classList.add("held");
+    t.setPointerCapture(e.pointerId);
+    const resize = e.target === grip;
+    const x0 = e.clientX, y0 = e.clientY, l0 = t.offsetLeft, t0 = t.offsetTop, w0 = t.offsetWidth;
+    const move = ev => {
+      const dx = ev.clientX - x0, dy = ev.clientY - y0;
+      if (resize) t.style.width = vw(Math.max(60, w0 + dx)) + "vw";
+      else { t.style.left = vw(l0 + dx) + "vw"; t.style.top = vw(Math.max(0, t0 + dy)) + "vw"; }
+    };
+    const up = () => { t.classList.remove("held"); t.removeEventListener("pointermove", move); t.removeEventListener("pointerup", up); };
+    t.addEventListener("pointermove", move);
+    t.addEventListener("pointerup", up);
+  });
+}
+
+// ---- dropping videos and pictures: they are thrown from where you let go -------------------
+function isVideo(f) { return f.type.startsWith("video/") || /\.(mp4|webm|mov|m4v|ogv)$/i.test(f.name); }
+function isImage(f) { return f.type.startsWith("image/") || /\.(png|jpe?g|webp|gif|avif|bmp)$/i.test(f.name); }
+
+function throwIn(files, cx, cy) {
+  files = files.filter(f => isVideo(f) || isImage(f)).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+  if (!files.length) return say("no videos or pictures in that / ahí no hay videos ni fotos");
+  const n = files.length, w = Math.max(9, Math.min(22, 60 / Math.sqrt(n)));   // fewer videos, bigger tiles
+  files.forEach((f, i) => {
+    const t = makeTile({ file: f.name, src: URL.createObjectURL(f), name: f.name.replace(/\.[^.]+$/, ""),
+                         x: vw(cx) - w / 2, y: vw(cy + window.scrollY) - w / 2, w });
+    t.style.setProperty("--spin", (Math.random() * 60 - 30) + "deg");
+    t.classList.add("fresh");
+    // land on a loose spiral around the drop point, each a little off
+    const a = i * 2.4, r = n === 1 ? 0 : w * 0.75 * Math.sqrt(i + 0.6);
+    const x = vw(cx) - w / 2 + Math.cos(a) * r + (Math.random() - .5) * w * .3;
+    const y = vw(cy + window.scrollY) - w / 2 + Math.sin(a) * r * 0.7 + (Math.random() - .5) * w * .3;
+    setTimeout(() => {
+      t.classList.remove("fresh");
+      t.style.left = Math.min(100 - w, Math.max(0, x)) + "vw";
+      t.style.top = Math.max(0, y) + "vw";
+    }, 30 + i * 70);
+  });
+  say(`${files.length} thrown in / lanzados`);
+}
+
+async function filesFrom(dt) {
+  const items = [...(dt.items || [])].filter(it => it.kind === "file");
+  if (items.length && items[0].getAsFileSystemHandle) {          // Chrome/Edge: folders work, and we remember the folder
+    const handles = await Promise.all(items.map(it => it.getAsFileSystemHandle()));
+    const out = [];
+    for (const h of handles) {
+      if (!h) continue;
+      if (h.kind === "directory") {
+        folder = h;
+        for await (const entry of h.values()) if (entry.kind === "file") out.push(await entry.getFile());
+      } else out.push(await h.getFile());
+    }
+    return out;
+  }
+  return [...dt.files];
+}
+
+addEventListener("dragover", e => { e.preventDefault(); stage.classList.add("over"); });
+addEventListener("dragleave", e => { if (!e.relatedTarget) stage.classList.remove("over"); });
+addEventListener("drop", async e => {
+  e.preventDefault(); stage.classList.remove("over");
+  const { clientX: x, clientY: y } = e;
+  throwIn(await filesFrom(e.dataTransfer), x, y);
+});
+document.getElementById("pick").onchange = e => { throwIn([...e.target.files], innerWidth / 2, innerHeight / 2); e.target.value = ""; };
+
+// ---- sound: browsers need one click before anything may sound -----------------
+document.getElementById("sound").onclick = () => {
+  soundOn = !soundOn;
+  document.getElementById("sound").textContent = soundOn ? "silence / silencio" : "sound / sonido";
+  for (const t of tiles()) { const v = t.querySelector("video"); if (!v) continue; v.muted = !(soundOn && t.dataset.sound === "1"); v.play(); }
+  if (soundOn && !tiles().some(t => t.dataset.sound === "1")) say("turn on ♪ on the videos you want to hear / activa ♪ en los que quieras oír");
+};
+
+// ---- save / guardar: this page again, with the map inside -------------------------------
+function layout() {
+  return tiles().map(t => ({ file: t.dataset.file, name: t.querySelector(".name").textContent,
+                             x: +parseFloat(t.style.left).toFixed(2), y: +parseFloat(t.style.top).toFixed(2),
+                             w: +parseFloat(t.style.width).toFixed(2), z: +t.style.zIndex, sound: t.dataset.sound === "1" }));
+}
+
+document.getElementById("save").onclick = async () => {
+  if (!tiles().length) return say("nothing to save yet / nada que guardar todavía");
+  const marker = "// @" + "layout";
+  const line = "let LAYOUT = " + JSON.stringify(layout()) + "; " + marker;
+  const html = SOURCE.replace(new RegExp("let LAYOUT = .*?; " + marker), () => line);
+  try {
+    if (folder) {                                                 // the folder that was dropped: write right next to the videos
+      const f = await folder.getFileHandle("patamapa.html", { create: true });
+      const w = await f.createWritable(); await w.write(html); await w.close();
+      return say(`saved / guardado: ${folder.name}\\patamapa.html`);
+    }
+    if (window.showSaveFilePicker) {
+      const f = await showSaveFilePicker({ suggestedName: "patamapa.html", types: [{ description: "map", accept: { "text/html": [".html"] } }] });
+      const w = await f.createWritable(); await w.write(html); await w.close();
+      return say("saved / guardado. It must sit next to the videos / debe estar junto a los videos");
+    }
+  } catch (err) { if (err.name === "AbortError") return; }
+  const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(new Blob([html], { type: "text/html" })), download: "patamapa.html" });
+  a.click();
+  say("downloaded patamapa.html: move it next to the videos / muévelo junto a los videos");
+};
+
+// ---- a saved map: the videos are the files next to this page ------------------
+if (LAYOUT) for (const t of LAYOUT) makeTile({ ...t, src: encodeURI(t.file) });
+refreshHint();
+</script>
+</body>
+</html>

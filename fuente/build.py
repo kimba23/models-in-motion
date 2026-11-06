@@ -14,7 +14,8 @@ OUT = ROOT / "publicar"
 REPO = "https://github.com/kimba23/models-in-motion"
 
 NAV = [("Install", "install.html"), ("Tools", "tools.html"),
-       ("1 Abundance", "sessions/01-abundance.html"), ("2 Pulse", "sessions/02-pulse.html")]
+       ("1 Abundance", "sessions/01-abundance.html"), ("2 Pulse", "sessions/02-pulse.html"),
+       ("3 Language", "sessions/03-language.html")]
 
 PAGE = """<!doctype html>
 <html lang="en">
@@ -43,7 +44,7 @@ def build():
     for old in OUT.iterdir():                    # empty it (a test server may be sitting in it)
         shutil.rmtree(old) if old.is_dir() else old.unlink()
     shutil.copy(SRC / "style.css", OUT / "style.css")
-    for folder in ("scripts", "downloads"):
+    for folder in ("scripts", "downloads", "media", "apps"):   # media and apps are copied as they are
         shutil.copytree(ROOT / folder, OUT / folder)
     for page in sorted((SRC / "pages").rglob("*.html")):
         rel = page.relative_to(SRC / "pages")

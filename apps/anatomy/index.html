@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My anatomy explained / Mi anatomía explicada</title>
+<style>
+  :root { --bg: #050505; --ink: #d8d4cc; --dim: #6c6862; --gap: 8px; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.4 Georgia, serif; }
+  main { display: grid; grid-template-columns: 1fr 3fr 1fr; gap: var(--gap); padding: var(--gap); max-width: 1400px; margin: 0 auto; }
+  .col { display: grid; grid-template-rows: repeat(7, 1fr); gap: var(--gap); }
+  .centre { display: flex; flex-direction: column; justify-content: center; gap: 12px; }
+  figure { margin: 0; position: relative; aspect-ratio: 1; background: #000; overflow: hidden; }
+  video { width: 100%; height: 100%; object-fit: cover; display: block; transition: filter 1s linear; }
+  figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 8px 6px; pointer-events: none;
+               background: linear-gradient(transparent, rgba(0,0,0,.75)); color: #fff; }
+  figcaption b { display: block; font-weight: normal; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; }
+  figcaption i { display: block; font-size: 11px; opacity: .8; }
+  #t00 figcaption b { font-size: 16px; }
+  #t00 figcaption i { font-size: 13px; }
+  .note { text-align: center; color: var(--dim); font-size: 13px; min-height: 1.4em; }
+  button { font: inherit; background: none; color: var(--ink); border: 1px solid var(--dim); padding: 8px 18px; cursor: pointer; }
+  button:hover { border-color: var(--ink); }
+  #sets { font-size: 15px; } #sets a { color: var(--dim); text-decoration: none; } #sets a.on { color: var(--ink); border-bottom: 1px solid var(--ink); }
+  @media (max-width: 760px) {
+    main { grid-template-columns: 1fr 1fr; }
+    .centre { grid-column: 1 / -1; order: -1; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <div class="col" id="left"></div>
+  <div class="centre">
+    <figure id="t00"></figure>
+    <div class="note"><button id="begin">start / empezar</button> <span id="clock"></span></div>
+    <div class="note" id="sets"><a href="../../sessions/03-language.html">← session 3</a> &nbsp;·&nbsp; 
+      <a href="index.html#tr" data-set="tr" onclick="setTimeout(()=>location.reload())">I · Tríptico in words / en palabras</a> &nbsp;·&nbsp; <a href="index.html#bq" data-set="bq" onclick="setTimeout(()=>location.reload())">II · Bosquejo in words / en palabras</a>
+    </div>
+  </div>
+  <div class="col" id="right"></div>
+</main>
+<script>
+// ---- settings ---------------------------------------------------------------
+// The order the text names them; the file of each tile is videos/<name>.mp4 (set I) or "videos bq/<name>.mp4" (set II)
+const SET = (new URLSearchParams(location.search).get("set") === "bq" || location.hash === "#bq" || location.pathname.endsWith("segunda.html")) ? "bq" : "tr";
+const FOLDER = SET === "bq" ? "videos_bq" : "videos_tr";
+const LEFT  = ["01 cabeza", "02 cerebro", "03 ojos", "04 orejas", "05 pecho", "06 sexo", "07 higado"];
+const RIGHT = ["08 intestinos", "09 corazon", "10 pies", "11 manos", "12 piernas", "13 brazos", "14 ombligo"];
+const CENTRE = "00 retrato";
+// what each tile is called on the page: the organ, and the picture that stands for it
+const NAMES = {
+  "00 retrato": ["portrait / retrato", "the open man, the seven-headed dragon / el hombre abierto, el dragón de siete cabezas"],
+  "01 cabeza": ["head / cabeza", "the battleship in the cage / el acorazado en la jaula"],
+  "02 cerebro": ["brain / cerebro", "the beehive and the man in the top hat / la colmena y el hombre del sombrero de copa"],
+  "03 ojos": ["eyes / ojos", "the sun and the globe-trunk / el sol y el baúl-globo"],
+  "04 orejas": ["ears / orejas", "the half stone head in the pond / la media cabeza de piedra en el estanque"],
+  "05 pecho": ["chest / pecho", "the Colossus of Thebes / el coloso de Tebas"],
+  "06 sexo": ["sex / sexo", "the egg over the castle / el huevo sobre el castillo"],
+  "07 higado": ["liver / hígado", "the telephone with the fetus / el teléfono con el feto"],
+  "08 intestinos": ["intestines / intestinos", "the three vipers in the chalice / las tres víboras en el cáliz"],
+  "09 corazon": ["heart / corazón", "the bowler hat / el sombrero hongo"],
+  "10 pies": ["feet / pies", "the centaur and the cat-fish / el centauro y el gato-pez"],
+  "11 manos": ["hands / manos", "the hanged man and the Earth / el ahorcado y la Tierra"],
+  "12 piernas": ["legs / piernas", "the chess knight / el caballo de ajedrez"],
+  "13 brazos": ["arms / brazos", "two fingers and one arrow / dos dedos y una saeta"],
+  "14 ombligo": ["navel / ombligo", "the scale of clocks / la balanza de relojes"],
+};
+
+const ALIVE = 60;          // seconds of life before the heart attack
+const ATTACK = 12;         // seconds the heart stumbles before it stops
+const FADE = 25;           // seconds each organ takes to slow down, lose colour and go silent
+// when each organ starts to die, in seconds after the heart stops (the brain lasts)
+const DEATH = {
+  "09 corazon": 0, "05 pecho": 20, "03 ojos": 40, "04 orejas": 60, "11 manos": 80, "13 brazos": 100,
+  "12 piernas": 120, "10 pies": 140, "06 sexo": 160, "07 higado": 180, "08 intestinos": 200,
+  "14 ombligo": 220, "01 cabeza": 240, "00 retrato": 270, "02 cerebro": 300,
+};
+// -----------------------------------------------------------------------------
+
+const tiles = {};
+function tile(name, parent) {
+  const fig = parent.tagName === "FIGURE" ? parent : parent.appendChild(document.createElement("figure"));
+  const v = document.createElement("video");
+  Object.assign(v, { src: `${FOLDER}/${name}.mp4`, loop: true, muted: true, playsInline: true, autoplay: true });
+  fig.append(v);
+  const cap = document.createElement("figcaption");
+  const [organ, picture] = NAMES[name];
+  cap.innerHTML = `<b>${organ}</b><i>${picture}</i>`;
+  fig.append(cap);
+  tiles[name] = v;
+}
+document.querySelector(`#sets a[data-set="${SET}"]`).classList.add("on");
+LEFT.forEach(n => tile(n, document.getElementById("left")));
+RIGHT.forEach(n => tile(n, document.getElementById("right")));
+tile(CENTRE, document.getElementById("t00"));
+
+// slow down, drain colour, go quiet; then stop on the last frame
+function die(v, seconds) {
+  const t0 = performance.now();
+  (function step(now) {
+    const k = Math.min(1, (now - t0) / (seconds * 1000));
+    v.playbackRate = Math.max(0.0625, 1 - k);
+    v.volume = Math.max(0, 1 - k);
+    v.style.filter = `saturate(${1 - k}) brightness(${1 - 0.65 * k}) blur(${2.5 * k}px)`;
+    if (k < 1) requestAnimationFrame(step); else v.pause();
+  })(t0);
+}
+
+// the heart: it stumbles (stops, races, stops), then stops for good
+function attack(v, seconds) {
+  const end = performance.now() + seconds * 1000;
+  (function stumble() {
+    if (performance.now() > end) { v.pause(); v.volume = 0; v.style.filter = "saturate(0) brightness(.4)"; return; }
+    if (Math.random() < 0.45) v.pause(); else { v.playbackRate = 0.5 + Math.random() * 2.5; v.play(); }
+    setTimeout(stumble, 120 + Math.random() * 700);
+  })();
+}
+
+function fmt(s) { return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`; }
+
+document.getElementById("begin").onclick = e => {
+  e.target.remove();
+  for (const v of Object.values(tiles)) { v.muted = false; v.currentTime = 0; v.play(); }
+  const start = performance.now(), clock = document.getElementById("clock");
+  const timers = [];
+  setTimeout(() => {
+    for (const [name, at] of Object.entries(DEATH)) {
+      timers.push(setTimeout(() => name === "09 corazon" ? attack(tiles[name], ATTACK) : die(tiles[name], FADE), at * 1000));
+    }
+  }, ALIVE * 1000);
+  const last = ALIVE + Math.max(...Object.values(DEATH)) + FADE;
+  (function tick() {
+    const s = (performance.now() - start) / 1000;
+    clock.textContent = s < ALIVE ? "" : fmt(s - ALIVE);
+    if (s < last) setTimeout(tick, 250);
+  })();
+};
+</script>
+</body>
+</html>
