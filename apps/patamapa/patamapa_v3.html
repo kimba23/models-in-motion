@@ -16,9 +16,9 @@
      Words: double-click to write, A− A+ size,
             ◯ pour the words into a circle (¶ back to a paragraph),
             ⁘ scatter the paragraph into loose words.
-     Whatever is on top wins: a picture laid over words pushes them aside;
-     words laid over a picture sit on it.
-  4. "pulse / pulso": the pictures lying on words jolt the words away on a beat, then let them settle.
+     Words flow around the pictures they touch. A word (or a few) dropped right onto a picture
+     sits on it, like a label.
+  4. "pulse / pulso": on a beat the pictures push the words around them away, then let them settle.
      A rhythm (tresillo, son clave, fib...) at the bpm you set, or "loop / bucle": each video
      kicks its words when it starts over. The space bar kicks by hand, any time.
   5. "save / guardar" saves the map as patamapa.html IN THE FOLDER OF THE VIDEOS.
@@ -488,7 +488,11 @@ const box = t => ({ x: t.offsetLeft, y: t.offsetTop, w: t.offsetWidth, h: t.offs
 // ¶ a paragraph: each line takes the free stretches between the pictures lying ON TOP of it
 function flow(t, text, px) {
   const lh = Math.round(px * LH), r = box(t), gap = Math.round(px * .7), minw = Math.min(px * 2.5, r.w), z = +t.style.zIndex;
-  const over = tiles().filter(o => o !== t && !o.classList.contains("words") && +o.style.zIndex > z)
+  // words flow around every picture they touch, except one they were dropped right onto (on top, centre inside): a label
+  const cx = r.x + r.w / 2, cy = r.y + Math.min(r.h, px * 3) / 2;
+  const label = o => z > +o.style.zIndex && cx > o.offsetLeft && cx < o.offsetLeft + o.offsetWidth
+                     && cy > o.offsetTop && cy < o.offsetTop + o.offsetHeight;
+  const over = tiles().filter(o => o !== t && !o.classList.contains("words") && !label(o))
                       .map(o => { const b = box(o); b.g = gap + (o.kick || 0) * px * JOLT; return b; })   // on a beat the gap jumps
                       .filter(o => o.x < r.x + r.w + o.g && o.x + o.w + o.g > r.x);
   const p = prep(text, font(px)), out = [];
@@ -578,6 +582,7 @@ const CURVES = { fib: fib(LONG), "fib backwards / al revés": fib(LONG).map(p =>
 const pulseSel = document.getElementById("pulse"), bpmBox = document.getElementById("bpm");
 pulseSel.innerHTML = ["off", "loop / bucle", ...Object.keys(RHYTHMS), ...Object.keys(CURVES)]
   .map(n => `<option>${n}</option>`).join("");
+pulseSel.value = "tresillo";                                          // v3 is the pulse: it starts beating
 pulseSel.onchange = bpmBox.onchange = () => pulseSel.blur();
 
 function isHit(name, step) {
@@ -715,7 +720,7 @@ function layout() {
         size: +(+t.dataset.size).toFixed(3), mode: t.dataset.mode }
     : { file: t.dataset.file, name: t.querySelector(".name").textContent, x: num(t, "left"), y: num(t, "top"),
         w: num(t, "width"), z: +t.style.zIndex, sound: t.dataset.sound === "1" })
-    .concat(pulseSel.value === "off" ? [] : [{ kind: "pulse", rhythm: pulseSel.value, bpm: +bpmBox.value }]);
+    .concat([{ kind: "pulse", rhythm: pulseSel.value, bpm: +bpmBox.value }]);
 }
 
 document.getElementById("save").onclick = async () => {
